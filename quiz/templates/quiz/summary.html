@@ -1,0 +1,15 @@
+{% extends "quiz/base.html" %}
+{% block content %}
+<h1>Result: {{ attempt.score }} / {{ attempt.size }}</h1>
+<p><a class="btn" href="{% url 'dashboard' %}">Back to dashboard</a></p>
+{% for i in items %}
+<section class="card">
+  <p class="muted">Question {{ i.position }}</p>
+  <h3>{{ i.question.text }}</h3>
+  <p class="{% if i.is_correct %}ok{% else %}bad{% endif %}"><b>{% if i.is_correct %}Correct{% else %}Wrong{% endif %}</b></p>
+  <p>Your answer: {{ i.selected|upper }}. {{ i.selected_text }}</p>
+  <p>Correct answer: {{ i.question.correct|upper }}. {{ i.correct_text }}</p>
+  <p>{{ i.question.explanation }}</p>
+</section>
+{% endfor %}
+{% endblock %}

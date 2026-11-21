@@ -1,0 +1,57 @@
+{% extends "quiz/base.html" %}
+{% block content %}
+<h1>Dashboard</h1>
+{% for c in courses %}
+<section class="card">
+  <h2>{{ c.course.title }}</h2>
+  <p class="stats">Progress <b>{{ c.progress }}%</b> &middot; Score <b>{{ c.score }}%</b> &middot; Rounds <b>{{ c.rounds }}</b> &middot; Quizzes <b>{{ c.quizzes }}</b></p>
+  <table>
+    <tr><th>Chapter</th><th>Progress</th><th>Score</th><th>Rounds</th><th>Quizzes</th><th></th></tr>
+    {% for ch in c.chapters %}
+    <tr>
+      <td>{{ ch.chapter.title }} <small>({{ ch.total }} q)</small></td>
+      <td>{{ ch.progress }}%</td><td>{{ ch.score }}%</td><td>{{ ch.rounds }}</td><td>{{ ch.quizzes }}</td>
+      <td>
+        {% if ch.total %}<a class="btn" href="{% url 'start' ch.chapter.id %}">{% if ch.open %}Resume{% else %}Start 20{% endif %}</a>{% endif %}
+        {% if ch.progress == 100 %}
+        <form method="post" action="{% url 'reset' %}" class="inline" onsubmit="return confirm('Reset this chapter?');">{% csrf_token %}
+          <input type="hidden" name="scope" value="chapter"><input type="hidden" name="id" value="{{ ch.chapter.id }}">
+          <button class="link" type="submit">Reset</button></form>
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}<tr><td colspan="6">No chapters yet.</td></tr>
+    {% endfor %}
+  </table>
+  {% if c.recent %}
+  <canvas data-src="{{ c.chart_id }}" height="90"></canvas>
+  {{ c.recent|json_script:c.chart_id }}
+  {% endif %}
+  {% if c.progress == 100 %}
+  <form method="post" action="{% url 'reset' %}" onsubmit="return confirm('Reset the whole course?');">{% csrf_token %}
+    <input type="hidden" name="scope" value="course"><input type="hidden" name="id" value="{{ c.course.id }}">
+    <button class="btn warn" type="submit">Reset course</button></form>
+  {% endif %}
+</section>
+{% empty %}<p>You have not subscribed to any course yet.</p>{% endfor %}
+
+{% if available %}
+<h2>Available courses</h2>
+{% for course in available %}
+<section class="card"><b>{{ course.title }}</b> <p>{{ course.description }}</p>
+  <form method="post" action="{% url 'subscribe' course.id %}">{% csrf_token %}<button class="btn" type="submit">Subscribe</button></form>
+</section>
+{% endfor %}
+{% endif %}
+{% endblock %}
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.querySelectorAll("canvas[data-src]").forEach(function (el) {
+  var d = JSON.parse(document.getElementById(el.dataset.src).textContent);
+  new Chart(el, {type: "line", data: {labels: d.map(x => x.label),
+    datasets: [{label: "Quiz score %", data: d.map(x => x.pct), tension: 0.2}]},
+    options: {scales: {y: {min: 0, max: 100}}}});
+});
+</script>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "admin/change_form.html" %}
+{% block object-tools-items %}
+{% if import_url %}
+<li><a href="{{ import_url }}">Import CSV</a></li>
+<li><a href="{{ template_url }}">Download template</a></li>
+<li><a href="{{ export_url }}">Export CSV</a></li>
+{% endif %}
+{{ block.super }}
+{% endblock %}

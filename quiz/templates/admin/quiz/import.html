@@ -1,0 +1,28 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div id="content-main">
+<p><a href="{{ back_url }}">&larr; Back to {{ original }}</a></p>
+{% if not plan %}
+<form method="post" enctype="multipart/form-data">{% csrf_token %}
+  <p>Upload a CSV with columns: chapter, question, option_a, option_b, option_c, option_d, correct, explanation (optional: is_active).</p>
+  <p><input type="file" name="file" accept=".csv,text/csv" required></p>
+  <input type="submit" value="Preview import">
+</form>
+{% else %}
+<h2>Preview</h2>
+<p>Add: <b>{{ counts.add }}</b> &middot; Update: <b>{{ counts.update }}</b> &middot; Unchanged: <b>{{ counts.unchanged }}</b> &middot; Rejected: <b>{{ counts.reject }}</b></p>
+<table>
+<thead><tr><th>Line</th><th>Status</th><th>Chapter</th><th>Question</th><th>Reason</th></tr></thead>
+<tbody>{% for p in plan %}
+<tr><td>{{ p.line }}</td><td>{{ p.status }}</td><td>{{ p.chapter }}</td><td>{{ p.text|truncatechars:80 }}</td><td>{{ p.reason }}</td></tr>
+{% endfor %}</tbody>
+</table>
+<form method="post">{% csrf_token %}
+  <textarea name="payload" hidden>{{ payload }}</textarea>
+  <p>Rejected rows are skipped; the valid rows are imported.</p>
+  <input type="submit" value="Confirm import">
+  <a href="">Cancel</a>
+</form>
+{% endif %}
+</div>
+{% endblock %}

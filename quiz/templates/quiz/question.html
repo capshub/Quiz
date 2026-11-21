@@ -1,0 +1,23 @@
+{% extends "quiz/base.html" %}
+{% block content %}
+<p class="muted">{{ attempt.chapter.title }} &middot; Question {{ item.position }} of {{ total }}</p>
+<section class="card">
+  <h2>{{ q.text }}</h2>
+  {% if not item.selected %}
+  <form method="post">{% csrf_token %}
+    {% for letter, text in q.options %}
+    <label class="opt"><input type="radio" name="choice" value="{{ letter }}" required> <b>{{ letter|upper }}.</b> {{ text }}</label>
+    {% endfor %}
+    <button class="btn" type="submit">Submit</button>
+  </form>
+  {% else %}
+  {% for letter, text in q.options %}
+  <div class="opt {% if letter == q.correct %}right{% elif letter == item.selected %}wrong{% endif %}"><b>{{ letter|upper }}.</b> {{ text }}</div>
+  {% endfor %}
+  <p class="{% if item.is_correct %}ok{% else %}bad{% endif %}"><b>{% if item.is_correct %}Correct{% else %}Wrong{% endif %}</b> &mdash; correct answer: {{ q.correct|upper }}. {{ item.correct_text }}</p>
+  <p>{{ q.explanation }}</p>
+  {% if is_last %}<a class="btn" href="{% url 'summary' attempt.pk %}">Finish</a>
+  {% else %}<a class="btn" href="{% url 'attempt' attempt.pk %}">Next</a>{% endif %}
+  {% endif %}
+</section>
+{% endblock %}

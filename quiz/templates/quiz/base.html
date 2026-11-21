@@ -1,0 +1,21 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Personal Quiz</title>
+<link rel="stylesheet" href="{% static 'quiz/style.css' %}">
+</head><body>
+<header>
+  <a class="brand" href="{% url 'dashboard' %}">Personal Quiz</a>
+  {% if user.is_authenticated %}
+  <span class="right">{{ user.username }}
+    {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a><a href="{% url 'backup' %}">Backup</a>{% endif %}
+    <form method="post" action="{% url 'logout' %}" class="inline">{% csrf_token %}<button type="submit" class="link">Log out</button></form>
+  </span>
+  {% endif %}
+</header>
+<main>
+{% for m in messages %}<div class="msg {{ m.tags }}">{{ m }}</div>{% endfor %}
+{% block content %}{% endblock %}
+</main>
+{% block scripts %}{% endblock %}
+</body></html>

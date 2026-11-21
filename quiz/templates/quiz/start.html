@@ -1,0 +1,15 @@
+{% extends "quiz/base.html" %}
+{% block content %}
+<h1>{{ chapter.title }}</h1>
+<section class="card">
+  <p>{{ info.total }} active questions &middot; progress {{ info.progress }}% &middot; score {{ info.score }}% &middot; rounds {{ info.rounds }}</p>
+  <form method="post">{% csrf_token %}
+    {% if full %}
+    <div class="msg warning">Every question in this chapter has already been attended. The quiz will continue with the least-attended questions.</div>
+    <p><label><input type="checkbox" name="confirm"> I understand, continue anyway</label></p>
+    {% endif %}
+    <p><label><input type="checkbox" name="wrong_first"> Wrong questions first</label></p>
+    <button class="btn" type="submit">Start quiz</button>
+  </form>
+</section>
+{% endblock %}

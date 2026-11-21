@@ -1,0 +1,4 @@
+﻿chapter,question,option_a,option_b,option_c,option_d,correct,explanation
+Basics,What is 2 + 3?,4,5,6,,b,Adding 2 and 3 gives 5.
+Basics,Which keyword defines a function in Python?,func,def,lambda,define,b,def introduces a function definition.
+Chapter 2,Which data structure is immutable?,list,dict,tuple,set,c,Tuples cannot be changed after creation.
